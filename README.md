@@ -1,4 +1,4 @@
-# onotes
+# oNotes
 
 A terminal-based notes application inspired by macOS Notes, built with Python and Textual.
 
@@ -31,11 +31,13 @@ Install oNotes so you can run it from anywhere with the `onotes` command.
 The installer will automatically install `pipx` if needed:
 
 ```bash
-git clone https://github.com/opossumactual/onotes.git
+git clone https://github.com/yourusername/onotes.git
 cd onotes
 chmod +x install.sh
-./install.sh
+bash install.sh
 ```
+
+**Note:** If you get permission errors, use `bash install.sh` instead of `./install.sh`
 
 If pipx was just installed, you'll need to restart your terminal or run:
 ```bash
@@ -47,18 +49,24 @@ Then run the installer again. After installation, you can run:
 onotes
 ```
 
-### Option 2: Run from Directory
+### Option 2: Run from Directory (No Installation)
 
-Run directly from the project folder:
+If you want to run without installing or just want to try it out:
 
 ```bash
+git clone https://github.com/yourusername/onotes.git
 cd onotes
-./run.sh
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python notes.py
 ```
 
-Or:
+**Quick run after setup:**
 ```bash
-./venv/bin/python notes.py
+cd onotes
+source venv/bin/activate
+python notes.py
 ```
 
 ### Uninstalling
@@ -66,8 +74,7 @@ Or:
 To remove oNotes:
 ```bash
 cd onotes
-chmod +x uninstall.sh
-./uninstall.sh
+bash uninstall.sh
 ```
 
 Or manually:
@@ -76,6 +83,44 @@ pipx uninstall onotes
 ```
 
 Your notes data will remain in `~/.notes_tui/` unless you manually delete it.
+
+## Troubleshooting
+
+### "Command not found" after installation
+
+If you get `onotes: command not found` after installing:
+
+**Quick Fix:**
+```bash
+export PATH="$PATH:$HOME/.local/bin"
+onotes
+```
+
+**Permanent Fix:**
+```bash
+echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
+source ~/.bashrc
+onotes
+```
+
+Or simply restart your terminal.
+
+### Permission Denied Errors
+
+If you get "Permission denied" errors:
+1. Use `bash scriptname.sh` instead of `./scriptname.sh`
+2. Example: `bash install.sh` instead of `./install.sh`
+
+### Can't Execute Scripts
+
+If chmod doesn't work or you can't execute scripts:
+```bash
+# Instead of ./install.sh, use:
+bash install.sh
+
+# Instead of ./run.sh, use:
+python3 notes.py
+```
 
 ## Keyboard Shortcuts
 

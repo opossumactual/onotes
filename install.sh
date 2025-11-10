@@ -20,9 +20,23 @@ if ! command -v pipx &> /dev/null; then
 
     # Ensure pipx path is set up
     pipx ensurepath
+
+    # Also manually add to PATH in .bashrc if not already there
+    if ! grep -q '.local/bin' ~/.bashrc; then
+        echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
+    fi
+
     echo ""
     echo "⚠️  Please run 'source ~/.bashrc' and then run this script again."
     exit 0
+fi
+
+# Ensure pipx is in PATH for this session
+export PATH="$PATH:$HOME/.local/bin"
+
+# Also add to .bashrc if not already there
+if ! grep -q '.local/bin' ~/.bashrc; then
+    echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
 fi
 
 # Install using pipx
@@ -73,10 +87,16 @@ if [ $? -eq 0 ]; then
     fi
 
     echo ""
-    echo "You can now run: onotes"
+    echo "🎉 Installation complete!"
     echo ""
-    echo "If 'onotes' command is not found, run:"
-    echo "  source ~/.bashrc"
+    echo "IMPORTANT: To use the 'onotes' command, either:"
+    echo "  1. Restart your terminal, OR"
+    echo "  2. Run: source ~/.bashrc"
+    echo ""
+    echo "If you still get 'command not found', run:"
+    echo "  export PATH=\"\$PATH:\$HOME/.local/bin\""
+    echo ""
+    echo "Then try: onotes"
     echo ""
 else
     echo ""
