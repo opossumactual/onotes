@@ -1,4 +1,4 @@
-# oNotes
+# onotes
 
 A terminal-based notes application inspired by macOS Notes, built with Python and Textual.
 
@@ -31,7 +31,7 @@ Install oNotes so you can run it from anywhere with the `onotes` command.
 The installer will automatically install `pipx` if needed:
 
 ```bash
-git clone https://github.com/yourusername/onotes.git
+git clone https://github.com/opossumactual/onotes.git
 cd onotes
 chmod +x install.sh
 ./install.sh
