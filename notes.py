@@ -248,6 +248,45 @@ class NoteEditor(TextArea):
         self.show_line_numbers = False
         self._wrapping = False  # Flag to prevent infinite loop
 
+    def _perform_wrap(self, cursor, current_line_index, lines, current_line) -> None:
+        """Perform the actual wrapping operation"""
+        # Find the last space before MAX_LINE_LENGTH
+        wrap_point = current_line.rfind(' ', 0, self.MAX_LINE_LENGTH)
+
+        if wrap_point == -1:
+            # No space found, force wrap at MAX_LINE_LENGTH
+            wrap_point = self.MAX_LINE_LENGTH
+
+        # Split the line
+        first_part = current_line[:wrap_point].rstrip()
+        second_part = current_line[wrap_point:].lstrip()
+
+        # Calculate cursor position on new line
+        old_cursor_col = cursor[1]
+        spaces_stripped = len(current_line[wrap_point:]) - len(second_part)
+
+        # If cursor was after the wrap point, move it to the new line
+        if old_cursor_col > len(first_part):
+            # Calculate position relative to the wrapped text
+            new_cursor_col = old_cursor_col - wrap_point - spaces_stripped
+            new_cursor_col = max(0, new_cursor_col)
+        else:
+            # Cursor stays at end of first line
+            new_cursor_col = len(second_part)
+
+        # Replace the current line with wrapped version
+        lines[current_line_index] = first_part
+        lines.insert(current_line_index + 1, second_part)
+
+        # Update the text
+        new_text = '\n'.join(lines)
+        self.load_text(new_text)
+
+        # Move cursor to appropriate position on new line
+        self.cursor_location = (current_line_index + 1, new_cursor_col)
+
+        self._wrapping = False
+
     def _check_and_wrap_current_line(self) -> None:
         """Check current line and wrap if it exceeds MAX_LINE_LENGTH"""
         if self._wrapping:
@@ -267,43 +306,8 @@ class NoteEditor(TextArea):
         # If current line exceeds limit, wrap it
         if len(current_line) > self.MAX_LINE_LENGTH:
             self._wrapping = True
-
-            # Find the last space before MAX_LINE_LENGTH
-            wrap_point = current_line.rfind(' ', 0, self.MAX_LINE_LENGTH)
-
-            if wrap_point == -1:
-                # No space found, force wrap at MAX_LINE_LENGTH
-                wrap_point = self.MAX_LINE_LENGTH
-
-            # Split the line
-            first_part = current_line[:wrap_point].rstrip()
-            second_part = current_line[wrap_point:].lstrip()
-
-            # Calculate cursor position on new line
-            old_cursor_col = cursor[1]
-            spaces_stripped = len(current_line[wrap_point:]) - len(second_part)
-
-            # If cursor was after the wrap point, move it to the new line
-            if old_cursor_col > len(first_part):
-                # Calculate position relative to the wrapped text
-                new_cursor_col = old_cursor_col - wrap_point - spaces_stripped
-                new_cursor_col = max(0, new_cursor_col)
-            else:
-                # Cursor stays at end of first line
-                new_cursor_col = len(second_part)
-
-            # Replace the current line with wrapped version
-            lines[current_line_index] = first_part
-            lines.insert(current_line_index + 1, second_part)
-
-            # Update the text
-            new_text = '\n'.join(lines)
-            self.load_text(new_text)
-
-            # Move cursor to appropriate position on new line
-            self.cursor_location = (current_line_index + 1, new_cursor_col)
-
-            self._wrapping = False
+            # Defer wrapping to not block current input event
+            self.call_after_refresh(self._perform_wrap, cursor, current_line_index, lines, current_line)
 
     def load_note(self, note: dict):
         """Load a note into the editor"""
@@ -547,6 +551,11 @@ class NotesApp(App):
         padding: 1;
     }
 
+    #folders:focus-within {
+        background: $accent 10%;
+        border-right: solid $accent 150%;
+    }
+
     #note-list {
         width: 30%;
         min-width: 25;
@@ -555,9 +564,18 @@ class NotesApp(App):
         padding: 1;
     }
 
+    #note-list:focus-within {
+        background: $accent 10%;
+        border-right: solid $accent 150%;
+    }
+
     #editor-container {
         width: 1fr;
         padding: 1;
+    }
+
+    #editor-container:focus-within {
+        background: $accent 10%;
     }
 
     #editor-placeholder {
@@ -606,6 +624,7 @@ class NotesApp(App):
         Binding("ctrl+f", "new_folder", "New Folder"),
         Binding("ctrl+s", "save_note", "Save"),
         Binding("ctrl+d", "delete_note", "Delete"),
+        Binding("escape", "focus_notes", "Back to Notes", show=False),
         Binding("tab", "focus_next", "Next Panel", show=False),
         Binding("shift+tab", "focus_previous", "Previous Panel", show=False),
         Binding("1", "focus_folders", "Folders", show=False),

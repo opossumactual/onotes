@@ -130,6 +130,7 @@ python3 notes.py
 - `Ctrl+F` - Create a new folder
 - `Ctrl+S` - Save the current note
 - `Ctrl+D` - Delete the highlighted/selected note OR folder (context-aware)
+- `Escape` - Return to notes list from editor (quick way to leave editing)
 - `Tab` / `Shift+Tab` - Switch between panels
 
 ### Quick Focus
@@ -140,6 +141,10 @@ python3 notes.py
 ### Navigation (in lists)
 - `↑` / `↓` or `j` / `k` - Move up/down
 - `Enter` - Select folder or note
+
+### Visual Indicators
+- The active panel will have a **highlighted background** to show where your cursor is
+- Brighter borders indicate the focused panel
 
 ## How to Use
 
@@ -187,11 +192,14 @@ Password settings are stored in: `~/.notes_tui/auth.json`
   - If you forget your password, you must delete `~/.notes_tui/auth.json` to reset
   - After deleting auth.json, run the install script again to set up password protection (or skip it)
   - To change password settings, delete `~/.notes_tui/auth.json` and reinstall
+- **Navigation Tips**:
+  - The active panel has a highlighted background so you always know where you are
+  - Press `Escape` anytime to quickly return to the notes list
+  - Navigate quickly using number keys (1, 2, 3) to jump between panels
+  - Press `Tab` to move between the title field and editor
+  - Vim users will feel at home with `j`/`k` navigation in lists
 - The editor only appears when you select or create a note - this prevents accidentally typing into an empty void
 - Give your notes descriptive titles using the title field at the top of the editor
-- Navigate quickly using number keys (1, 2, 3) to jump between panels
-- Press `Tab` to move between the title field and editor
-- Vim users will feel at home with `j`/`k` navigation in lists
 - `Ctrl+D` is context-aware: it deletes folders when focused on the folders panel, and notes when focused elsewhere
 - Resize your terminal window at any time - the layout will adjust automatically
 - Text automatically wraps at 80 characters per line, breaking at word boundaries
