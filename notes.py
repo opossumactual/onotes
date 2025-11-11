@@ -279,6 +279,19 @@ class NoteEditor(TextArea):
             first_part = current_line[:wrap_point].rstrip()
             second_part = current_line[wrap_point:].lstrip()
 
+            # Calculate cursor position on new line
+            old_cursor_col = cursor[1]
+            spaces_stripped = len(current_line[wrap_point:]) - len(second_part)
+
+            # If cursor was after the wrap point, move it to the new line
+            if old_cursor_col > len(first_part):
+                # Calculate position relative to the wrapped text
+                new_cursor_col = old_cursor_col - wrap_point - spaces_stripped
+                new_cursor_col = max(0, new_cursor_col)
+            else:
+                # Cursor stays at end of first line
+                new_cursor_col = len(second_part)
+
             # Replace the current line with wrapped version
             lines[current_line_index] = first_part
             lines.insert(current_line_index + 1, second_part)
@@ -287,8 +300,8 @@ class NoteEditor(TextArea):
             new_text = '\n'.join(lines)
             self.load_text(new_text)
 
-            # Move cursor to start of new line
-            self.cursor_location = (current_line_index + 1, 0)
+            # Move cursor to appropriate position on new line
+            self.cursor_location = (current_line_index + 1, new_cursor_col)
 
             self._wrapping = False
 
